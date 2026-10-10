@@ -18,8 +18,5 @@ class IrHttp(models.AbstractModel):
 
         0 leaves the lists as they are.
         """
-        value = self.env["ir.config_parameter"].sudo().get_param(PARAM_ROWS, "0")
-        try:
-            return max(int(value), 0)
-        except ValueError:
-            return 0
+        rows = self.env["ir.config_parameter"].sudo().get_int(PARAM_ROWS, 0)
+        return max(rows, 0)

@@ -1,32 +1,36 @@
 /* Copyright 2026 Jarsa
  * License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl). */
-import {X2ManyField, x2ManyField} from "@web/views/fields/x2many/x2many_field";
-import {useEffect, useRef} from "@odoo/owl";
+import {
+    X2ManyField,
+    x2ManyField,
+    x2ManyFieldProps,
+} from "@web/views/fields/x2many/x2many_field";
+import {onMounted, onPatched, signal, t} from "@odoo/owl";
 import {patch} from "@web/core/utils/patch";
 import {session} from "@web/session";
 
 export const SCROLL_CLASS = "o_web_x2many_list_scroll";
 
-X2ManyField.props = {
-    ...X2ManyField.props,
-    scrollRows: {type: Number, optional: true},
-};
+x2ManyFieldProps.scrollRows = t.number().optional();
 
 patch(X2ManyField.prototype, {
     setup() {
         super.setup();
+        // The template binds the ref whatever the field does, so it is always
+        // a ref: OWL refuses an undefined one.
+        this.scrollRootRef = signal.ref();
         if (this.scrollRows) {
             this.className = `${this.className} ${SCROLL_CLASS}`;
-            this.scrollRootRef = useRef("scrollRoot");
             // Rows are as tall as their content, their font and the device
             // (a touch screen pads them more), so the height of the box comes
             // from the first row and the header as rendered, not from a guess.
-            useEffect(() => this.measureScrollRows());
+            onMounted(() => this.measureScrollRows());
+            onPatched(() => this.measureScrollRows());
         }
     },
 
     measureScrollRows() {
-        const root = this.scrollRootRef?.el;
+        const root = this.scrollRootRef();
         const row = root?.querySelector(".o_list_table tbody tr.o_data_row");
         const header = root?.querySelector(".o_list_table thead");
         if (!row || !header) {

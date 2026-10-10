@@ -7,9 +7,9 @@
         t-inherit="web.X2ManyField"
         t-inherit-mode="extension"
     >
-        <xpath expr="//div[@t-att-class='className']" position="attributes">
-            <attribute name="t-att-style">scrollStyle</attribute>
-            <attribute name="t-ref">scrollRoot</attribute>
+        <xpath expr="//div[@t-att-class='this.className']" position="attributes">
+            <attribute name="t-att-style">this.scrollStyle</attribute>
+            <attribute name="t-ref">this.scrollRootRef</attribute>
         </xpath>
     </t>
 </templates>
